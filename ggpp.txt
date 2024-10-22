@@ -1,0 +1,926 @@
+trans
+from tkinter import*
+root=Tk()
+c=Canvas(root,bg="white",height=600,width=400)
+x=int(input("Enter x1"))
+y=int(input("Enter y1"))
+p=int(input("Enter x2"))
+q=int(input("Enter y2"))
+c.create_text(x,y-10,text="Rectangle before Translation",fill="black")
+c.create_rectangle(x,y,p,q,fill="red")
+tx=200
+ty=300
+c.create_text(x+tx,y+ty-10,text="Rectangle After Translation",fill="black")
+c.create_rectangle(x+tx,y+ty,p+tx,q+ty,fill="green")
+c.pack()
+mainloop()
+
+------------------------------------------------------------------------------
+
+scale
+
+from tkinter import *
+root = Tk()
+c = Canvas(root, bg="white", height=600, width=600)
+
+x1 = int(input("Enter x-coordinate of vertex 1: "))  
+y1 = int(input("Enter y-coordinate of vertex 1: "))  
+x2 = int(input("Enter x-coordinate of vertex 2: "))  
+y2 = int(input("Enter y-coordinate of vertex 2: "))  
+x3 = int(input("Enter x-coordinate of vertex 3: "))  
+y3 = int(input("Enter y-coordinate of vertex 3: "))  
+
+# Scaling factors
+sx = 2
+sy = 3
+
+# for Original triangle
+triangle_coords = (x1, y1, x2, y2, x3, y3)
+c.create_text(x1, y1 - 20, text="Triangle before Scaling", fill="black")
+c.create_polygon(triangle_coords, fill="green")
+
+# Scaled triangle
+scaled_triangle_coords = (x1 * sx, y1 * sy, x2 * sx, y2 * sy, x3 * sx, y3 * sy)
+c.create_text(x1 * sx, y1 * sy - 20, text="Triangle After Scaling", fill="black")
+c.create_polygon(scaled_triangle_coords, fill="green")
+c.pack()
+root.mainloop()
+
+------------------------------------------------------------------------------
+
+reflec
+from tkinter import *
+root = Tk()
+c = Canvas(root, height=700, width=700)
+c.pack()
+n = int(input("Enter the no. sides of polygon: "))
+coord = []
+for i in range(0, n):
+    x = int(input(f"x{i+1}: "))
+    y = int(input(f"y{i+1}: "))
+    coord.append(x)
+    coord.append(y)
+ta = 300
+# Reflection w.r.t.y
+coordwx = []
+for i in range(len(coord)):
+    if i % 2 != 0:
+        y = -1 * coord[i] + 2 * ta
+        coordwx.append(y)
+    else:
+        coordwx.append(coord[i])
+c.create_polygon(coord, fill="green")
+c.create_polygon(coordwx, fill="green")
+
+# Reflection w.r.t.x
+coordwy = []
+for i in range(len(coord)):
+    if i % 2 == 0:
+        x = -1 * coord[i] + 2 * ta
+        coordwy.append(x)
+    else:
+        coordwy.append(coord[i])
+
+c.create_polygon(coord, fill="green")
+c.create_polygon(coordwx, fill="green")
+c.create_polygon(coordwy, fill="green")
+c.pack()
+mainloop()
+
+
+------------------------------------------------------------------------------
+
+rotate
+import math
+from tkinter import *
+root = Tk()
+c = Canvas(root, height=700, width=700)
+c.pack()
+
+n = 3
+coords = []
+for i in range(n):
+    x = int(input(f"x{i+1}: "))
+    y = int(input(f"y{i+1}: "))
+    coords.append(x)
+    coords.append(y)
+
+def rotate_point(x, y, angle):
+    angle_rad = math.radians(angle)
+    new_x = x * math.cos(angle_rad) - y * math.sin(angle_rad)
+    new_y = x * math.sin(angle_rad) + y * math.cos(angle_rad)
+    return new_x, new_y
+
+rcoords = []
+for i in range(0, len(coords), 2):
+    x = coords[i]
+    y = coords[i + 1]
+    new_x, new_y = rotate_point(x, y, 45)
+    rcoords.append(new_x)
+    rcoords.append(new_y)
+
+c.create_polygon(coords, fill="green")
+c.create_polygon(rcoords, fill="blue")
+
+c.pack()
+root.mainloop()
+
+------------------------------------------------------------------------------
+
+shear
+from tkinter import *
+import math
+
+# Initialize the Tkinter window
+root = Tk()
+C = Canvas(root, bg="gray", height=1000, width=1000)
+
+# Taking input of coordinates from the user
+x0 = int(input("Enter x0: "))
+y0 = int(input("Enter y0: "))
+x1 = int(input("Enter x1: "))
+y1 = int(input("Enter y1: "))
+x2 = int(input("Enter x2: "))
+y2 = int(input("Enter y2: "))
+x3 = int(input("Enter x3: "))
+y3 = int(input("Enter y3: "))
+b = int(input("Enter angle of Shearing: "))
+# Draw the original shape (quadrilateral)
+shape1 = C.create_polygon(x0, y0, x1, y1, x2, y2, x3, y3, fill="green")
+
+# Calculating new x-coordinates after shearing along the x-axis
+xsh2 = (x2 + y2 * math.tan(math.radians(b)))
+xsh3 = (x3 + y3 * math.tan(math.radians(b)))
+
+# Draw the sheared shape (quadrilateral)
+shape2 = C.create_polygon(x0, y0, x1, y1, xsh2, y2, xsh3, y3, fill="blue")
+C.pack()
+root.mainloop()
+
+------------------------------------------------------------------------------
+
+combine
+from tkinter import *
+#029
+# Initialize the Tkinter window
+root = Tk()
+C = Canvas(root, bg="white", height=600, width=1200)  # Increased width for better spacing
+
+# Define the arrow coordinates (x, y) for the original arrow
+arrow_coords = [
+    (100, 200), (200, 200), (200, 150), 
+    (300, 250), (200, 350), (200, 300), 
+    (100, 300)
+]
+
+# Draw the original arrow shape
+arrow_shape = C.create_polygon(arrow_coords, fill="lightblue", outline="black", width=2)
+
+# Reflection about the y-axis (invert x-coordinates and shift to the right for visibility)
+reflected_coords = [(-x + 600, y) for (x, y) in arrow_coords]  
+reflected_shape = C.create_polygon(reflected_coords, fill="lightgreen", outline="black", width=2)
+
+# Translation (shift the reflected shape by a given amount)
+tx, ty = 400, 0  # Translation factors (only x translation to keep shapes separate)
+translated_coords = [(x + tx, y + ty) for (x, y) in reflected_coords]
+translated_shape = C.create_polygon(translated_coords, fill="yellow", outline="black", width=2)
+
+# Scaling (enlarge the translated shape)
+scale_factor = 1.5
+scaled_coords = [(x * scale_factor - 300, y * scale_factor) for (x, y) in translated_coords]
+scaled_shape = C.create_polygon(scaled_coords, fill="pink", outline="black", width=2)
+
+# Add labels for each transformation
+C.create_text(150, 400, text="Original", font=("Arial", 14))
+C.create_text(400, 400, text="Reflected", font=("Arial", 14))
+C.create_text(1000, 500, text="Translated & Scaled", font=("Arial", 14))
+
+C.pack()
+root.mainloop()
+
+------------------------------------------------------------------------------
+
+##space invader
+import pygame
+import random
+import math
+
+# Initialize Pygame
+pygame.init()
+
+# Screen dimensions
+screen_width = 800
+screen_height = 600
+screen = pygame.display.set_mode((screen_width, screen_height))
+
+# Background
+background = pygame.image.load('background.png')
+background = pygame.transform.scale(background, (screen_width, screen_height))
+
+# Title and Icon
+pygame.display.set_caption("Space Invaders")
+icon = pygame.image.load('spaceship.png')
+icon = pygame.transform.scale(icon, (32, 32))
+pygame.display.set_icon(icon)
+
+# Player
+player_img = pygame.image.load('spaceship.png')
+player_img = pygame.transform.scale(player_img, (64, 64))
+player_x = 370
+player_y = 480
+player_x_change = 0
+player_speed = 5
+
+# Enemy
+enemy_img = []
+enemy_x = []
+enemy_y = []
+enemy_x_change = []
+enemy_y_change = []
+num_of_enemies = 6
+
+for i in range(num_of_enemies):
+    enemy_image = pygame.image.load('enemy.png')
+    enemy_image = pygame.transform.scale(enemy_image, (84, 64))
+    enemy_img.append(enemy_image)
+    enemy_x.append(random.randint(0, 735))
+    enemy_y.append(random.randint(50, 150))
+    enemy_x_change.append(4)
+    enemy_y_change.append(40)
+
+# Bullet
+bullet_img = pygame.image.load('bullet.png')
+bullet_img = pygame.transform.scale(bullet_img, (32, 32))
+bullet_x = 0
+bullet_y = 480
+bullet_x_change = 0
+bullet_y_change = 10
+bullet_state = "ready"
+
+# Score
+score_value = 0
+font = pygame.font.Font('freesansbold.ttf', 32)
+text_x = 10
+text_y = 10
+
+# Game Over
+over_font = pygame.font.Font('freesansbold.ttf', 64)
+
+
+def show_score(x, y):
+    score = font.render("Score: " + str(score_value), True, (255, 255, 255))
+    screen.blit(score, (x, y))
+
+
+def game_over_text():
+    over_text = over_font.render("GAME OVER", True, (255, 255, 255))
+    screen.blit(over_text, (200, 250))
+
+
+def player(x, y):
+    screen.blit(player_img, (x, y))
+
+
+def enemy(x, y, i):
+    screen.blit(enemy_img[i], (x, y))
+
+
+def fire_bullet(x, y):
+    global bullet_state
+    bullet_state = "fire"
+    screen.blit(bullet_img, (x + 16, y + 10))
+
+
+def is_collision(enemy_x, enemy_y, bullet_x, bullet_y):
+    distance = math.sqrt(math.pow(enemy_x - bullet_x, 2) + math.pow(enemy_y - bullet_y, 2))
+    return distance < 27
+
+
+def game_over_screen(score):
+    screen.fill((0, 0, 0))
+    game_over_text()
+    show_score(text_x, text_y)
+    pygame.display.update()
+
+    waiting = True
+    while waiting:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_c:
+                    waiting = False
+                    return True
+                if event.key == pygame.K_q:
+                    pygame.quit()
+                    quit()
+    return False
+
+
+game_over = False
+
+
+# Game Loop
+while True:
+    # Background Image
+    screen.blit(background, (0, 0))
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            quit()
+
+        # Keystroke checking
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_LEFT:
+                player_x_change = -player_speed
+            if event.key == pygame.K_RIGHT:
+                player_x_change = player_speed
+            if event.key == pygame.K_SPACE:
+                if bullet_state == "ready":
+                    bullet_x = player_x
+                    fire_bullet(bullet_x, bullet_y)
+
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+                player_x_change = 0
+
+    # Player movement
+    player_x += player_x_change
+    if player_x <= 0:
+        player_x = 0
+    elif player_x >= screen_width - 64:
+        player_x = screen_width - 64
+
+    # Enemy movement
+    for i in range(num_of_enemies):
+        # Game Over
+        if enemy_y[i] > 440:
+            game_over = True
+            break
+
+        enemy_x[i] += enemy_x_change[i]
+        if enemy_x[i] <= 0:
+            enemy_x_change[i] = 4
+            enemy_y[i] += enemy_y_change[i]
+        elif enemy_x[i] >= screen_width - 64:
+            enemy_x_change[i] = -4
+            enemy_y[i] += enemy_y_change[i]
+
+        # Collision
+        collision = is_collision(enemy_x[i], enemy_y[i], bullet_x, bullet_y)
+        if collision:
+            bullet_y = 480
+            bullet_state = "ready"
+            score_value += 1
+            enemy_x[i] = random.randint(0, 735)
+            enemy_y[i] = random.randint(50, 150)
+
+        enemy(enemy_x[i], enemy_y[i], i)
+
+    # Bullet movement
+    if bullet_y <= 0:
+        bullet_y = 480
+        bullet_state = "ready"
+
+    if bullet_state == "fire":
+        fire_bullet(bullet_x, bullet_y)
+        bullet_y -= bullet_y_change
+
+    player(player_x, player_y)
+    show_score(text_x, text_y)
+    pygame.display.update()
+
+    if game_over:
+        if not game_over_screen(score_value):
+            break
+
+# Background
+background = pygame.image.load('./desktop/background.png')
+background = pygame.transform.scale(background, (screen_width, screen_height))
+
+# Title and Icon
+pygame.display.set_caption("Space Invaders")
+icon = pygame.image.load('./desktop/spaceship.png')
+icon = pygame.transform.scale(icon, (32, 32))
+pygame.display.set_icon(icon)
+
+# Player
+player_img = pygame.image.load('./desktop/spaceship.png')
+player_img = pygame.transform.scale(player_img, (64, 64))
+player_x = 370
+player_y = 480
+player_x_change = 0
+player_speed = 5
+
+# Enemy
+enemy_img = []
+enemy_x = []
+enemy_y = []
+enemy_x_change = []
+enemy_y_change = []
+num_of_enemies = 6
+
+for i in range(num_of_enemies):
+    enemy_image = pygame.image.load('./desktop/enemy.png')
+    enemy_image = pygame.transform.scale(enemy_image, (64, 64))
+    enemy_img.append(enemy_image)
+    enemy_x.append(random.randint(0, 735))
+    enemy_y.append(random.randint(50, 150))
+    enemy_x_change.append(4)
+    enemy_y_change.append(40)
+
+# Bullet
+bullet_img = pygame.image.load('./desktop/bullet.png')
+bullet_img = pygame.transform.scale(bullet_img, (32, 32))
+bullet_x = 0
+bullet_y = 480
+bullet_x_change = 0
+bullet_y_change = 10
+bullet_state = "ready"
+
+# Score
+score_value = 0
+font = pygame.font.Font('freesansbold.ttf', 32)
+text_x = 10
+text_y = 10
+
+# Game Over
+over_font = pygame.font.Font('freesansbold.ttf', 64)
+
+
+def show_score(x, y):
+    score = font.render("Score: " + str(score_value), True, (255, 255, 255))
+    screen.blit(score, (x, y))
+
+
+def game_over_text():
+    over_text = over_font.render("GAME OVER", True, (255, 255, 255))
+    screen.blit(over_text, (200, 250))
+
+
+def player(x, y):
+    screen.blit(player_img, (x, y))
+
+
+def enemy(x, y, i):
+    screen.blit(enemy_img[i], (x, y))
+
+
+def fire_bullet(x, y):
+    global bullet_state
+    bullet_state = "fire"
+    screen.blit(bullet_img, (x + 16, y + 10))
+
+
+def is_collision(enemy_x, enemy_y, bullet_x, bullet_y):
+    distance = math.sqrt(math.pow(enemy_x - bullet_x, 2) + math.pow(enemy_y - bullet_y, 2))
+    return distance < 27
+
+
+def game_over_screen(score):
+    screen.fill((0, 0, 0))  # Fill the screen with black
+    game_over_text()
+    show_score(text_x, text_y)
+    pygame.display.update()
+
+    waiting = True
+    while waiting:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_c:
+                    waiting = False
+                    return True
+                if event.key == pygame.K_q:
+                    pygame.quit()
+                    quit()
+    return False
+
+
+game_over = False
+
+# Game Loop
+while True:
+    # Background Image
+    screen.blit(background, (0, 0))
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            quit()
+
+        # Keystroke checking
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_LEFT:
+                player_x_change = -player_speed
+            if event.key == pygame.K_RIGHT:
+                player_x_change = player_speed
+            if event.key == pygame.K_SPACE:
+                if bullet_state == "ready":
+                    bullet_x = player_x
+                    fire_bullet(bullet_x, bullet_y)
+
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+                player_x_change = 0
+
+    # Player movement
+    player_x += player_x_change
+    if player_x <= 0:
+        player_x = 0
+    elif player_x >= screen_width - 64:
+        player_x = screen_width - 64
+
+    # Enemy movement
+    for i in range(num_of_enemies):
+        # Game Over
+        if enemy_y[i] > 440:
+            game_over = True
+            break
+
+        enemy_x[i] += enemy_x_change[i]
+        if enemy_x[i] <= 0:
+            enemy_x_change[i] = 4
+            enemy_y[i] += enemy_y_change[i]
+        elif enemy_x[i] >= screen_width - 64:
+            enemy_x_change[i] = -4
+            enemy_y[i] += enemy_y_change[i]
+
+        # Collision
+        collision = is_collision(enemy_x[i], enemy_y[i], bullet_x, bullet_y)
+        if collision:
+            bullet_y = 480
+            bullet_state = "ready"
+            score_value += 1
+            enemy_x[i] = random.randint(0, 735)
+            enemy_y[i] = random.randint(50, 150)
+
+        enemy(enemy_x[i], enemy_y[i], i)
+
+    # Bullet movement
+    if bullet_y <= 0:
+        bullet_y = 480
+        bullet_state = "ready"
+
+    if bullet_state == "fire":
+        fire_bullet(bullet_x, bullet_y)
+        bullet_y -= bullet_y_change
+    player(player_x, player_y)
+    show_score(text_x, text_y)
+    pygame.display.update()
+
+    if game_over:
+        if not game_over_screen(score_value):
+            break
+
+------------------------------------------------------------------------------
+
+snake game
+Import pygame
+import random
+
+# Initializing Pygame
+pygame.init()
+
+# Defining colors
+white = (255, 255, 255)
+black = (0, 0, 0)
+red = (213, 50, 80)
+green = (0, 255, 0)
+blue = (50, 153, 213)
+light_blue = (173, 216, 230)
+orange = (255, 165, 0)
+
+# To Display game
+width = 800
+height = 600
+game_display = pygame.display.set_mode((width, height))
+pygame.display.set_caption('Snake Game')
+# Defining the clock to control the game's speed
+clock = pygame.time.Clock()
+
+# Size of each block of snake
+snake_block = 20
+
+# initial snake's speed
+initial_speed = 15
+
+# font for the score and messages
+font_style = pygame.font.SysFont("bahnschrift", 25)
+score_font = pygame.font.SysFont("comicsansms", 35)
+
+# Gradient color function
+def create_gradient_surface(size, color1, color2):
+    gradient_surface = pygame.Surface(size)
+    for y in range(size[1]):
+        color = [
+            int(color1[i] + (color2[i] - color1[i]) * y / size[1])
+            for i in range(3)
+        ]
+        pygame.draw.line(gradient_surface, color, (0, y), (size[0], y))
+    return gradient_surface
+
+def display_score(score):
+    score_text = score_font.render("Score: " + str(score), True, white)
+    game_display.blit(score_text, [width - 150, 10])
+
+def draw_snake(snake_block, snake_list):
+    gradient_color1 = (0, 128, 0)  # Dark green
+    gradient_color2 = (0, 255, 0)  # Light green
+    for block in snake_list:
+        x, y = block
+        gradient_surface = create_gradient_surface((snake_block, snake_block), gradient_color1, gradient_color2)
+        game_display.blit(gradient_surface, (x, y))
+        pygame.draw.circle(game_display, gradient_color2, (int(x + snake_block // 2), int(y + snake_block // 2)), snake_block // 2)
+
+def draw_food(x, y):
+    food_color = red
+    pygame.draw.circle(game_display, food_color, (int(x + snake_block // 2), int(y + snake_block // 2)), snake_block // 2)
+
+def display_message(msg, color):
+    message = font_style.render(msg, True, color)
+    message_rect = message.get_rect(center=(width / 2, height / 2))
+    game_display.blit(message, message_rect)
+
+def pause_game():
+    paused = True
+    display_message("Game Paused. Press P to Resume", red)
+    pygame.display.update()
+
+    while paused:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_p:
+                    paused = False
+
+# For generating random wall positions at the edges
+def generate_walls():
+    walls = []
+    wall_block_count = 10  # Number of wall blocks at each edge
+
+    # Top edge
+    for i in range(wall_block_count):
+        walls.append((random.randint(0, width // snake_block - 1) * snake_block, 0))
+
+    # Bottom edge
+    for i in range(wall_block_count):
+        walls.append((random.randint(0, width // snake_block - 1) * snake_block, height - snake_block))
+
+    # Left edge
+    for i in range(wall_block_count):
+        walls.append((0, random.randint(0, height // snake_block - 1) * snake_block))
+
+    # Right edge
+    for i in range(wall_block_count):
+        walls.append((width - snake_block, random.randint(0, height // snake_block - 1) * snake_block))
+
+    return walls
+
+def draw_walls(walls):
+    wall_color = orange
+    for wall in walls:
+        pygame.draw.rect(game_display, wall_color, [wall[0], wall[1], snake_block, snake_block])
+
+# Main game loop
+def game_loop():
+    game_over = False
+    game_close = False
+
+    # Initial snake position
+    x = width / 2
+    y = height / 2
+
+    # Initial movement
+    x_change = 0
+    y_change = 0
+
+    snake_list = []
+    snake_length = 1
+
+    # Initial speed
+    snake_speed = initial_speed
+
+    # Place food randomly on the screen
+    food_x = round(random.randrange(0, width - snake_block) / snake_block) * snake_block
+    food_y = round(random.randrange(0, height - snake_block) / snake_block) * snake_block
+
+    # Generate wall positions
+    walls = generate_walls()
+
+    while not game_over:
+
+        while game_close:
+            game_display.fill(black)
+            display_message("You Lost! Press C-Play Again or Q-Quit", red)
+            display_score(snake_length - 1)
+            pygame.display.update()
+
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_q:
+                        game_over = True
+                        game_close = False
+                    if event.key == pygame.K_c:
+                        game_loop()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                game_over = True
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT and x_change == 0:
+                    x_change = -snake_block
+                    y_change = 0
+                elif event.key == pygame.K_RIGHT and x_change == 0:
+                    x_change = snake_block
+                    y_change = 0
+                elif event.key == pygame.K_UP and y_change == 0:
+                    y_change = -snake_block
+                    x_change = 0
+                elif event.key == pygame.K_DOWN and y_change == 0:
+                    y_change = snake_block
+                    x_change = 0
+                elif event.key == pygame.K_p:
+                    pause_game()
+
+        # Implementing portal behavior at the boundaries
+        if x >= width:
+            x = 0
+        elif x < 0:
+            x = width - snake_block
+        if y >= height:
+            y = 0
+        elif y < 0:
+            y = height - snake_block
+
+        x += x_change
+        y += y_change
+
+        # Draw the background
+        game_display.fill(light_blue)
+
+        # Draw the walls
+        draw_walls(walls)
+
+        # Draw the food
+        draw_food(food_x, food_y)
+
+        # Snake growing mechanics
+        snake_head = [x, y]
+        snake_list.append(snake_head)
+
+        if len(snake_list) > snake_length:
+            del snake_list[0]
+
+        # Check if snake collides with itself
+        for block in snake_list[:-1]:
+            if block == snake_head:
+                game_close = True
+
+        # Check if snake collides with the walls
+        for wall in walls:
+            if x == wall[0] and y == wall[1]:
+                game_close = True
+
+        draw_snake(snake_block, snake_list)
+        display_score(snake_length - 1)
+
+        pygame.display.update()
+
+        # Check if the snake eats the food
+        if x == food_x and y == food_y:
+            food_x = round(random.randrange(0, width - snake_block) / snake_block) * snake_block
+            food_y = round(random.randrange(0, height - snake_block) / snake_block) * snake_block
+            snake_length += 1
+
+            # Increase speed every 5 points
+            if snake_length % 5 == 0:
+                snake_speed += 2
+
+        clock.tick(snake_speed)
+
+    pygame.quit()
+    quit()
+
+
+
+game_loop()
+
+------------------------------------------------------------------------------
+
+
+2d ufo game
+
+#player behaviour
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class PlayerBehaviourScript : MonoBehaviour
+{
+    private Rigidbody2D rbd;
+    public float speed ;
+    public int score;
+
+    // Start is called before the first frame update
+    void Start()
+    {
+     rbd = GetComponent<Rigidbody2D>();
+    }
+
+    // Update is called once per frame
+    void FixedUpdate()
+    {
+        float moveHorizontal = Input.GetAxis("Horizontal");
+        float moveVertical = Input.GetAxis("Vertical");
+        Vector2 movement = new Vector2(moveHorizontal, moveVertical);
+        rbd.AddForce(movement * speed);
+    }
+private void OnTriggerEnter2D(Collider2D other)
+{
+    if (other.tag == "Pickup")
+    {
+        other.gameObject.SetActive(false);
+    }
+}
+
+
+}
+
+
+#camerascrit
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+
+public class PlayerBehaviourScript : MonoBehaviour
+{
+    private Rigidbody2D rbd;
+    public float speed ;
+    public int score;
+    public Text Wintext;
+
+    // Start is called before the first frame update
+    void Start()
+    {
+     rbd = GetComponent<Rigidbody2D>();
+    }
+
+    // Update is called once per frame
+    void FixedUpdate()
+    {
+        float moveHorizontal = Input.GetAxis("Horizontal");
+        float moveVertical = Input.GetAxis("Vertical");
+        Vector2 movement = new Vector2(moveHorizontal, moveVertical);
+        rbd.AddForce(movement * speed);
+    }
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.tag == "Pickup")
+        {
+            other.gameObject.SetActive(false);
+            score++;
+            SetScoreText();
+        }
+    }
+    void SetScoreText()
+    {
+        Wintext.text = "Score: " + score.ToString();
+        if (score >= 6)
+        {
+            Wintext.text = "You Win!";
+
+        }
+    }
+
+}
+For camera to track player add a script to camera and write the following code 
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class CameraScript : MonoBehaviour
+{
+    public GameObject player;
+    private Vector3 offset;
+    // Start is called before the first frame update
+    void Start()
+    {
+        offset = transform.position - player.transform.position;
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        transform.position = player.transform.position + offset;
+        
+    }
+}

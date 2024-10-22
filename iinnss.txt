@@ -1,0 +1,376 @@
+#Caesar Cipher
+def caesar_cipher_encrypt(plaintext, shift):
+    result = ''
+    for char in plaintext:
+        if char.isalpha():
+            shift_amount = shift % 26
+            start = ord('A') if char.isupper() else ord('a')
+            result += chr(start + (ord(char) - start + shift_amount) % 26)
+        else:
+            result += char
+    return result
+
+def caesar_cipher_decrypt(ciphertext, shift):
+    return caesar_cipher_encrypt(ciphertext, -shift)
+
+# Example usage
+plaintext = "Kya Woh Sach Tha "
+shift = 3
+encrypted = caesar_cipher_encrypt(plaintext, shift)
+decrypted = caesar_cipher_decrypt(encrypted, shift)
+
+print(f"Caesar Cipher Encryption: {encrypted}")
+print(f"Caesar Cipher Decryption: {decrypted}")
+
+------------------------------------------------------------------------------
+
+#Monoalphabetic Cipher
+def monoalphabetic_cipher_encrypt(plaintext, key):
+    alphabet = 'abcdefghijklmnopqrstuvwxyz'
+    substitution = key.lower()
+    translation_table = str.maketrans(alphabet, substitution)
+    return plaintext.translate(translation_table)
+
+def monoalphabetic_cipher_decrypt(ciphertext, key):
+    alphabet = 'abcdefghijklmnopqrstuvwxyz'
+    substitution = key.lower()
+    reverse_substitution = ''.join(sorted(set(substitution), key=substitution.index))
+    translation_table = str.maketrans(substitution, alphabet)
+    return ciphertext.translate(translation_table)
+# Example usage
+key = "zxcvbnmasdfghjklqwertyuiop"
+plaintext = "Tamas do makuda Haule"
+encrypted = monoalphabetic_cipher_encrypt(plaintext, key)
+decrypted = monoalphabetic_cipher_decrypt(encrypted, key)
+
+print(f"Monoalphabetic Cipher Encryption: {encrypted}")
+print(f"Monoalphabetic Cipher Decryption: {decrypted}")
+
+------------------------------------------------------------------------------
+
+#vernam
+#Caesar Cipher
+def caesar_cipher_encrypt(plaintext, shift):
+    result = ''
+    for char in plaintext:
+        if char.isalpha():
+            shift_amount = shift % 26
+            start = ord('A') if char.isupper() else ord('a')
+            result += chr(start + (ord(char) - start + shift_amount) % 26)
+        else:
+            result += char
+    return result
+
+def caesar_cipher_decrypt(ciphertext, shift):
+    return caesar_cipher_encrypt(ciphertext, -shift)
+
+# Example usage
+plaintext = "Kya Woh Sach Tha "
+shift = 3
+encrypted = caesar_cipher_encrypt(plaintext, shift)
+decrypted = caesar_cipher_decrypt(encrypted, shift)
+
+print(f"Caesar Cipher Encryption: {encrypted}")
+print(f"Caesar Cipher Decryption: {decrypted}")
+
+------------------------------------------------------------------------------
+
+#Monoalphabetic Cipher
+def monoalphabetic_cipher_encrypt(plaintext, key):
+    alphabet = 'abcdefghijklmnopqrstuvwxyz'
+    substitution = key.lower()
+    translation_table = str.maketrans(alphabet, substitution)
+    return plaintext.translate(translation_table)
+
+def monoalphabetic_cipher_decrypt(ciphertext, key):
+    alphabet = 'abcdefghijklmnopqrstuvwxyz'
+    substitution = key.lower()
+    reverse_substitution = ''.join(sorted(set(substitution), key=substitution.index))
+    translation_table = str.maketrans(substitution, alphabet)
+    return ciphertext.translate(translation_table)
+# Example usage
+key = "zxcvbnmasdfghjklqwertyuiop"
+plaintext = "Tamas do makuda Haule"
+encrypted = monoalphabetic_cipher_encrypt(plaintext, key)
+decrypted = monoalphabetic_cipher_decrypt(encrypted, key)
+
+print(f"Monoalphabetic Cipher Encryption: {encrypted}")
+print(f"Monoalphabetic Cipher Decryption: {decrypted}")
+
+------------------------------------------------------------------------------
+
+#RailFence Cipher
+def rail_fence_encrypt(text, key):
+    rail = [''] * key
+    row = 0
+    direction = 1  # 1 for down, -1 for up
+
+    for char in text:
+        rail[row] += char
+        row += direction
+
+        if row == 0 or row == key - 1:
+            direction *= -1
+
+    return ''.join(rail)
+
+def rail_fence_decrypt(cipher, key):
+    rail = [['\n' for _ in range(len(cipher))] for _ in range(key)]
+    row, col, direction = 0, 0, 1
+
+    for i in range(len(cipher)):
+        rail[row][col] = '*'
+        col += 1
+        row += direction
+
+        if row == 0 or row == key - 1:
+            direction *= -1
+
+    index = 0
+    for i in range(key):
+        for j in range(len(cipher)):
+            if rail[i][j] == '*' and index < len(cipher):
+                rail[i][j] = cipher[index]
+                index += 1
+
+    result = []
+    row, col, direction = 0, 0, 1
+    for i in range(len(cipher)):
+        result.append(rail[row][col])
+        col += 1
+        row += direction
+
+        if row == 0 or row == key - 1:
+            direction *= -1
+
+    return ''.join(result)
+
+# Example usage:
+plaintext = "HELLOTRANSPOSITION"
+key = 3
+cipher = rail_fence_encrypt(plaintext, key)
+print("Rail Fence Encrypted Text:", cipher)
+
+decrypted_text = rail_fence_decrypt(cipher, key)
+print("Rail Fence Decrypted Text:", decrypted_text)
+
+------------------------------------------------------------------------------
+
+#Simple Columnar Cipher
+import math
+#generate matrix
+def genmat(pt,col):
+    lpt=(list(pt))
+    row= math.ceil(len(pt)/col)
+    emptycells=(row*col)-len(pt)
+    lpt.extend('x'* emptycells)
+    mat=[]
+    for i in range(0,len(pt),col):
+        mat.append(lpt[i :i+col])
+    
+    return mat
+         
+print(genmat(list("Hello"),4))
+#Encryption
+def encrypt(msg,key):
+    col=len(key)
+    pt=list(msg.replace(" ",""))
+    matrix=genmat(pt,col)
+    skey=sorted(list(key))
+    kin=0
+    ct=""
+    
+    for i in range(col):
+        cur_col_index=key.index(skey[kin])
+        for row in matrix:
+            ct+=row[cur_col_index]
+        kin+=1
+    return ct
+print(encrypt("Hellofnnadaworld","Hacka"))
+
+------------------------------------------------------------------------------
+
+
+#DES
+import pyDes
+data=b"Encrypt this data"
+#des constructor
+#key=64 bits =8byes => bytestring
+#mode=cbc
+#IV => 8bytes => bytestring
+# pad=None
+# padmode=PAD_PKCS5
+k=pyDes.des(b"DECRYPTS",pyDes.CBC,b"\0\0\0\0\0\0\0\0",pad=None,padmode=pyDes.PAD_PKCS5)
+c=k.encrypt(data)
+print("Encrypted:",c)
+print("Decrypted:",k.decrypt(c))
+assert k.decrypt(c) == data
+
+------------------------------------------------------------------------------
+
+#AES
+pip install pyaes
+import pyaes
+key=b"This_key_for_demo_purposes_only!"
+pt="Encrypt this string"
+
+aes=pyaes.AESModeOfOperationCTR(key)
+ct=aes.encrypt(pt)
+print("Cipher Text",ct)
+
+
+aes=pyaes.AESModeOfOperationCTR(key)
+dec=aes.decrypt(ct)
+print("Plain Text",dec)
+
+------------------------------------------------------------------------------
+
+
+#RSA
+
+import random
+import math
+
+def primals(lower, upper):
+    prime_list = []
+    for num in range(lower, upper):
+        for i in range(2, (num // 2) + 1):
+            if (num % i) == 0:
+                break
+        else:
+            prime_list.append(num)
+    return prime_list
+
+def generateKeys():
+    p = random.choice(primals(10, 45))
+    q = random.choice(primals(46, 100))
+    n = p * q
+    phiN = (p - 1) * (q - 1)
+    
+    for i in range(2, phiN):
+        if math.gcd(phiN, i) == 1:
+            e = i
+            break
+
+    i = 1
+    while True:
+        d = ((phiN * i) + 1) / e
+        if int(d) == d:
+            d = int(d)
+            break
+        i += 1
+    
+    requisites = {"n": n, "e": e, "d": d}
+    print(requisites)
+    return requisites
+
+def encrypt(plaintext, prerequisites):
+    n = prerequisites["n"]
+    e = prerequisites["e"]
+    
+    encrypted_text = [(ord(char) ** e) % n for char in plaintext]
+    return encrypted_text
+
+def decrypt(ciphertext, prerequisites):
+    n = prerequisites["n"]
+    d = prerequisites["d"]
+    
+    decrypted_text = ''.join([chr((char ** d) % n) for char in ciphertext])
+    return decrypted_text
+
+# Generate RSA keys
+prerequisites = generateKeys()
+
+# Input plaintext to encrypt
+plaintext = "HELLO"
+print("Plaintext:", plaintext)
+
+# Encrypting the plaintext
+ciphertext = encrypt(plaintext, prerequisites)
+print("Encrypted Text:", ciphertext)
+
+# Decrypting the ciphertext
+decrypted_text = decrypt(ciphertext, prerequisites)
+print("Decrypted Text:", decrypted_text)
+
+------------------------------------------------------------------------------
+
+##deffie hellman
+
+import random
+def diffie_hellman_key_exchange():
+    # Publicly known prime number (P) and base (G)
+    P = 23  # Prime number
+    G = 9   # Primitive root modulo P
+    # Manish's secret key (a)
+    a = random.randint(1, P - 1)
+    A = pow(G, a, P)  
+    # Manisha's secret key (b)
+    b = random.randint(1, P - 1)
+    B = pow(G, b, P)  
+
+    # Exchange public keys A and B
+    # Manish computes the shared key using Manisha's public key B
+    manish_shared_key = pow(B, a, P)
+
+    # Manisha computes the shared key using Manish's public key A
+    manisha_shared_key = pow(A, b, P)
+
+    return manish_shared_key, manisha_shared_key
+
+# Generate the symmetric keys for both Manish and Manisha
+manish_key, manisha_key = diffie_hellman_key_exchange()
+
+print("Manish's Key:", manish_key)
+print("Manisha's Key:", manisha_key)
+
+# Check if both keys are identical (which they should be)
+if manish_key == manisha_key:
+    print("Key Agreement Successful! Shared Key:", manish_key)
+else:
+    print("Key Agreement Failed!")
+
+------------------------------------------------------------------------------
+
+##md5
+import hashlib
+def compute_md5(message):
+    md5_hash = hashlib.md5()
+    md5_hash.update(message.encode('utf-8'))
+    return md5_hash.hexdigest()
+message = "MumbaiMazhaMayaNagri"
+digest = compute_md5(message)
+print("Message:", message)
+print("MD5 Digest:", digest)
+
+------------------------------------------------------------------------------
+
+hmavc
+import hmac
+import hashlib
+def hmac_sha1(key, message):
+    return hmac.new(key.encode(), message.encode(), hashlib.sha1).hexdigest()
+key = "my_secret_key"
+message = "MumbaiMazhaMayaNagri"
+signature = hmac_sha1(key, message)
+
+print("Key:", key)
+print("Message:", message)
+print("HMAC-SHA1 Signature:", signature)
+
+------------------------------------------------------------------------------
+
+##ssl
+import ssl
+import socket
+
+def create_ssl_socket():
+    hostname = 'www.google.com'
+    context = ssl.create_default_context()
+
+    with socket.create_connection((hostname, 443)) as sock:
+        with context.wrap_socket(sock, server_hostname=hostname) as ssock:
+            print("SSL Connection Established")
+            print("SSL Version:", ssock.version())
+
+create_ssl_socket()
