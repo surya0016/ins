@@ -1,0 +1,824 @@
+******1.Implement BFS using Romania map******
+
+dict_hn = {"Arad": 336, "Bucharest": 0, "Craiova": 160, "Dobreta": 242, "Eforie": 161, "Fagaras": 178,
+           "Giurgiu": 77, "Hirsova": 151, "Iasi": 226, "Lugoj": 244,
+           "Mehadia": 241, "Neamt": 234, "Oradea": 380, "Pitesti": 98, "Rimnica_Vilcea": 193,
+           "Sibiu": 253, "Timisoara": 329, "Urziceni": 80, "Vaslui": 199,
+           "Zerind": 374}
+
+dict_gn = dict(Arad=dict(Zerind=75, Timisoara=118, Sibiu=140),
+               Bucharest=dict(Urziceni=85, Giurgiu=90, Pitesti=101, Fagaras=211),
+               Craiova=dict(Dobreta=120, Rimnica_Vilcea=146, Pitesti=138),
+               Dobreta=dict(Craiova=120, Mehadia=75),
+               Eforie=dict(Hirsova=86),
+               Fagaras=dict(Sibiu=99, Bucharest=211),
+               Giurgiu=dict(Bucharest=90),
+               Hirsova=dict(Eforie=86, Urziceni=98),
+               Iasi=dict(Neamt=87, Vaslui=92),
+               Lugoj=dict(Mehadia=70, Timisoara=111),
+               Mehadia=dict(Dobreta=75, Lugoj=70),
+               Neamt=dict(Iasi=87),
+               Oradea=dict(Zerind=71, Sibiu=151),
+               Pitesti=dict(Rimnica_Vilcea=97, Bucharest=101, Craiova=138),
+               Rimnica_Vilcea=dict(Pitesti=97, Craiova=146, Sibiu=80),
+               Sibiu=dict(Oradea=151, Fagaras=99, Rimnica_Vilcea=80),
+               Timisoara=dict(Arad=118, Lugoj=111),
+               Urziceni=dict(Bucharest=85, Vaslui=142, Hirsova=98),
+               Vaslui=dict(Iasi=92, Urziceni=142),
+               Zerind=dict(Arad=75, Oradea=71))
+
+import queue as Q
+
+start = 'Arad'
+goal = 'Bucharest'
+result = []
+
+def BFS(city, cityq, visitedq):
+    global result
+    if city == start:
+        result.append(city)
+        
+    for eachcity in dict_gn[city].keys():
+        if eachcity == goal:
+            result.append(eachcity)
+            return
+        if eachcity not in cityq.queue and eachcity not in visitedq.queue:
+            cityq.put(eachcity)
+            result.append(eachcity)
+    
+    visitedq.put(city)
+    
+    if not cityq.empty():
+        BFS(cityq.get(), cityq, visitedq)
+
+def main():
+    cityq = Q.Queue()
+    visitedq = Q.Queue()
+    BFS(start, cityq, visitedq)
+    print("BFS Traversal from", start, "to", goal, "is:")
+    print(' '.join(result))
+
+main()
+
+******2.Implementing DLS and IDDFS******
+
+import queue as Q
+
+# The city graph (assuming it's from a previous example)
+dict_gn = dict(Arad=dict(Zerind=75, Timisoara=118, Sibiu=140),
+               Bucharest=dict(Urziceni=85, Giurgiu=90, Pitesti=101, Fagaras=211),
+               Craiova=dict(Dobreta=120, Rimnica_Vilcea=146, Pitesti=138),
+               Dobreta=dict(Craiova=120, Mehadia=75),
+               Eforie=dict(Hirsova=86),
+               Fagaras=dict(Sibiu=99, Bucharest=211),
+               Giurgiu=dict(Bucharest=90),
+               Hirsova=dict(Eforie=86, Urziceni=98),
+               Iasi=dict(Neamt=87, Vaslui=92),
+               Lugoj=dict(Mehadia=70, Timisoara=111),
+               Mehadia=dict(Dobreta=75, Lugoj=70),
+               Neamt=dict(Iasi=87),
+               Oradea=dict(Zerind=71, Sibiu=151),
+               Pitesti=dict(Rimnica_Vilcea=97, Bucharest=101, Craiova=138),
+               Rimnica_Vilcea=dict(Pitesti=97, Craiova=146, Sibiu=80),
+               Sibiu=dict(Oradea=151, Fagaras=99, Rimnica_Vilcea=80),
+               Timisoara=dict(Arad=118, Lugoj=111),
+               Urziceni=dict(Bucharest=85, Vaslui=142, Hirsova=98),
+               Vaslui=dict(Iasi=92, Urziceni=142),
+               Zerind=dict(Arad=75, Oradea=71))
+
+start = 'Arad'
+goal = 'Bucharest'
+result = ''
+
+# Depth-Limited Search (DLS)
+def DLS(city, visitedstack, startlimit, endlimit):
+    global result
+    result += city + ' '
+    visitedstack.append(city)
+    
+    if city == goal:
+        return True
+    if startlimit == endlimit:
+        return False
+    
+    for eachcity in dict_gn[city].keys():
+        if eachcity not in visitedstack:
+            found = DLS(eachcity, visitedstack, startlimit + 1, endlimit)
+            if found:
+                return True
+    
+    visitedstack.pop()  # Backtracking
+    return False
+
+# Iterative Deepening Depth-First Search (IDDFS)
+def IDDFS(city, visitedstack, endlimit):
+    global result
+    for i in range(endlimit + 1):
+        print("Searching at limit:", i)
+        if DLS(city, visitedstack, 0, i):
+            print("Found")
+            return True
+        else:
+            print("Not Found at limit:", i)
+            print(result)
+            print("----------")
+            result = ''
+            visitedstack.clear()  # Reset the visited stack for each new depth level
+    return False
+
+def main():
+    visitedstack = []
+    IDDFS(start, visitedstack, 9)
+    print("IDDFS Traversal from", start, "to", goal, "is:")
+    print(result)
+
+main()
+
+
+******3.Implementing A* ******
+
+import queue as Q
+#from RMP import dict_gn,dict_hn
+dict_hn = {"Arad": 336, "Bucharest": 0, "Craiova": 160, "Dobreta": 242, "Eforie": 161, "Fagaras": 178,
+           "Giurgiu": 77, "Hirsova": 151, "Iasi": 226, "Lugoj": 244,
+           "Mehadia": 241, "Neamt": 234, "Oradea": 380, "Pitesti": 98, "Rimnica_Vilcea": 193,
+           "Sibiu": 253, "Timisoara": 329, "Urziceni": 80, "Vaslui": 199,
+           "Zerind": 374}
+
+dict_gn = dict(Arad=dict(Zerind=75, Timisoara=118, Sibiu=140),
+               Bucharest=dict(Urziceni=85, Giurgiu=90, Pitesti=101, Fagaras=211),
+               Craiova=dict(Dobreta=120, Rimnica_Vilcea=146, Pitesti=138),
+               Dobreta=dict(Craiova=120, Mehadia=75),
+               Eforie=dict(Hirsova=86),
+               Fagaras=dict(Sibiu=99, Bucharest=211),
+               Giurgiu=dict(Bucharest=90),
+               Hirsova=dict(Eforie=86, Urziceni=98),
+               Iasi=dict(Neamt=87, Vaslui=92),
+               Lugoj=dict(Mehadia=70, Timisoara=111),
+               Mehadia=dict(Dobreta=75, Lugoj=70),
+               Neamt=dict(Iasi=87),
+               Oradea=dict(Zerind=71, Sibiu=151),
+               Pitesti=dict(Rimnica_Vilcea=97, Bucharest=101, Craiova=138),
+               Rimnica_Vilcea=dict(Pitesti=97, Craiova=146, Sibiu=80),
+               Sibiu=dict(Oradea=151, Fagaras=99, Rimnica_Vilcea=80),
+               Timisoara=dict(Arad=118, Lugoj=111),
+               Urziceni=dict(Bucharest=85, Vaslui=142, Hirsova=98),
+               Vaslui=dict(Iasi=92, Urziceni=142),
+               Zerind=dict(Arad=75, Oradea=71))
+
+start = 'Arad'
+goal = 'Bucharest'
+result = ''
+
+def get_fn(citystr):
+    cities = citystr.split(",")
+    gn = 0
+    for ctr in range(0, len(cities) - 1):
+        gn += dict_gn[cities[ctr]][cities[ctr + 1]]
+    hn = dict_hn[cities[-1]]
+    return hn + gn
+
+def expand(cityq):
+    global result
+    if cityq.empty():
+        return
+
+    tot, citystr, thiscity = cityq.get()
+    if thiscity == goal:
+        result = citystr + " : : " + str(tot)
+        return
+
+    for cty in dict_gn[thiscity]:
+        new_path = citystr + "," + cty
+        cityq.put((get_fn(new_path), new_path, cty))
+
+    expand(cityq)
+
+def main():
+    cityq = Q.PriorityQueue()
+    thiscity = start
+    cityq.put((get_fn(start), start, thiscity))
+    expand(cityq)
+    print("The A* path with the total is:")
+    print(result)
+
+main()
+
+******4.Implementing Decision Tree using entropy and information gain******
+change stuff according to question
+pip install pandas scikit-learn matplotlib
+
+create playtennis.csv
+Day,Outlook,Temp,Humidity,Windy,Play
+1,sunny,hot,high,FALSE,no
+2,sunny,hot,high,TRUE,no
+3,overcast,hot,high,FALSE,yes
+4,rainy,mild,high,FALSE,yes
+5,rainy,cool,normal,FALSE,yes
+6,rainy,cool,normal,TRUE,no
+7,overcast,cool,normal,TRUE,yes
+8,sunny,mild,high,FALSE,no
+9,sunny,cool,normal,FALSE,yes
+10,rainy,mild,normal,FALSE,yes
+11,sunny,mild,normal,TRUE,yes
+12,overcast,mild,high,TRUE,yes
+13,overcast,hot,normal,FALSE,yes
+14,rainy,mild,high,TRUE,no
+
+main code
+
+import pandas as pd 
+import matplotlib.pyplot as plt
+from sklearn.tree import DecisionTreeClassifier, plot_tree
+from sklearn.preprocessing import LabelEncoder
+
+df = pd.read_csv("C:/Users/admin/Documents/TM 63/PlayTennis.csv")
+
+le = LabelEncoder()
+df['Outlook'] = le.fit_transform(df['Outlook'])
+df['Temperature'] = le.fit_transform(df['Temp'])
+df['Humidity'] = le.fit_transform(df['Humidity'])
+df['Windy'] = le.fit_transform(df['Windy'])
+df['PlayTennis'] = le.fit_transform(df['Play'])
+
+X = df[['Outlook', 'Temperature', 'Humidity', 'Windy']]
+y = df['PlayTennis']
+print(X, y)
+
+clf = DecisionTreeClassifier(criterion="entropy", random_state=42)
+clf.fit(X, y)
+
+plt.figure(figsize=(10, 6))
+plot_tree(clf, filled=True, feature_names=['Outlook', 'Temperature', 'Humidity', 'Windy'], class_names=['No', 'Yes'])
+plt.title('Decision Tree for Play Tennis')
+plt.show()
+
+******5.Implementing Linear Regression*******
+pip install pandas scikit-learn matplotlib
+
+create diabetes.csv
+Pregnancies,Glucose,BloodPressure,SkinThickness,Insulin,BMI,DiabetesPedigreeFunction,Age,Outcome
+6,148,72,35,0,33.6,0.627,50,1
+1,85,66,29,0,26.6,0.351,31,0
+8,183,64,0,0,23.3,0.672,32,1
+1,89,66,23,94,28.1,0.167,21,0
+0,137,40,35,168,43.1,2.288,33,1
+5,116,74,0,0,25.6,0.201,30,0
+3,78,50,32,88,31.0,0.248,26,1
+10,115,0,0,0,35.3,0.134,29,0
+2,197,70,45,543,30.5,0.158,53,1
+8,125,96,0,0,0.0,0.232,54,1
+4,110,92,0,0,37.6,0.191,30,0
+10,168,74,0,0,38.0,0.537,34,1
+10,139,80,0,0,27.1,1.441,57,0
+1,189,60,23,846,30.1,0.398,59,1
+5,166,72,19,175,25.8,0.587,51,1
+7,100,0,0,0,30.0,0.484,32,1
+0,118,84,47,230,45.8,0.551,31,1
+7,107,74,0,0,29.6,0.254,31,1
+
+main code
+
+import pandas as pd 
+import matplotlib.pyplot as mtp 
+from sklearn.linear_model import LinearRegression 
+from sklearn.model_selection import train_test_split 
+from sklearn.metrics import mean_squared_error 
+
+url = "C:/Users/HP/Desktop/AI/diabetes.csv" 
+df = pd.read_csv(url) 
+
+X = df.drop('Outcome', axis=1) 
+y = df['Outcome'] 
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42) 
+
+model = LinearRegression() 
+model.fit(X_train, y_train) 
+
+y_pred = model.predict(X_test) 
+
+mse = mean_squared_error(y_test, y_pred) 
+print("Mean Squared Error:", mse) 
+
+mtp.figure(figsize=(10, 6))
+mtp.scatter(y_test, y_pred, color='blue') 
+mtp.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'k--', lw=2) 
+mtp.xlabel('Actual') 
+mtp.ylabel('Predicted') 
+mtp.title('Actual vs Predicted') 
+mtp.show()
+
+*******6.To implement basic computation of a neuron in an artificial neural network.******
+
+import numpy as np
+
+def neuron_output(inputs, weights, bias):
+    weighted_sum = np.dot(inputs, weights) + bias
+    print("Weighted Sum is", weighted_sum)
+    if weighted_sum > 0:
+        print("Output is 1")
+    else:
+        print("Output is 0")
+
+inputs = [0.5, 0.2]
+weights = [0.4, 0.6]
+bias = -0.3
+neuron_output(inputs, weights, bias)
+
+******7.compute the output of a neuron with different activation function.******
+
+import numpy as np 
+
+def neuron_output(inputs, weights, bias, activation_function): 
+    weighted_sum = np.dot(inputs, weights) + bias 
+    print("Weighted sum is:", weighted_sum) 
+    if activation_function == 'sigmoid': 
+        output = 1 / (1 + np.exp(-weighted_sum))
+    elif activation_function == 'relu': 
+        output = max(0, weighted_sum) 
+    elif activation_function == 'tanh': 
+        output = np.tanh(weighted_sum) 
+    elif activation_function == 'linear': 
+        output = weighted_sum 
+    else:
+        raise ValueError("Unknown activation function") 
+    print("Final Output:", output) 
+    return output 
+
+inputs = [0.5, 0.2]
+weights = [0.4, 0.6]
+bias = -0.3 
+
+print("Activation Function: Sigmoid") 
+output_sigmoid = neuron_output(inputs, weights, bias, activation_function='sigmoid') 
+
+print("\nActivation Function: ReLU") 
+output_relu = neuron_output(inputs, weights, bias, activation_function='relu') 
+
+print("\nActivation Function: TanH") 
+output_tanh = neuron_output(inputs, weights, bias, activation_function='tanh') 
+
+print("\nActivation Function: Linear") 
+output_linear = neuron_output(inputs, weights, bias, activation_function='linear')
+
+******8.K-Nearest Neighbor Algorithm.*******
+create diabetes.csv
+Pregnancies,Glucose,BloodPressure,SkinThickness,Insulin,BMI,DiabetesPedigreeFunction,Age,Outcome
+6,148,72,35,0,33.6,0.627,50,1
+1,85,66,29,0,26.6,0.351,31,0
+8,183,64,0,0,23.3,0.672,32,1
+1,89,66,23,94,28.1,0.167,21,0
+0,137,40,35,168,43.1,2.288,33,1
+5,116,74,0,0,25.6,0.201,30,0
+3,78,50,32,88,31.0,0.248,26,1
+10,115,0,0,0,35.3,0.134,29,0
+2,197,70,45,543,30.5,0.158,53,1
+8,125,96,0,0,0.0,0.232,54,1
+4,110,92,0,0,37.6,0.191,30,0
+10,168,74,0,0,38.0,0.537,34,1
+10,139,80,0,0,27.1,1.441,57,0
+1,189,60,23,846,30.1,0.398,59,1
+5,166,72,19,175,25.8,0.587,51,1
+7,100,0,0,0,30.0,0.484,32,1
+0,118,84,47,230,45.8,0.551,31,1
+7,107,74,0,0,29.6,0.254,31,1
+
+import matplotlib.pyplot as plt 
+import numpy as np 
+import pandas as pd 
+from sklearn.model_selection import train_test_split 
+from sklearn.neighbors import KNeighborsClassifier 
+from sklearn.preprocessing import StandardScaler 
+from sklearn.metrics import accuracy_score 
+
+df = pd.read_csv("C:/Users/HP/Desktop/AI/diabetes.csv") 
+X = df[['Glucose', 'BloodPressure']].values 
+y = df['Outcome'].values 
+X = StandardScaler().fit_transform(X) 
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42) 
+
+knn = KNeighborsClassifier(n_neighbors=5) 
+knn.fit(X_train, y_train) 
+
+y_pred = knn.predict(X_test) 
+
+asc = accuracy_score(y_test, y_pred) 
+print("Accuracy Score:", asc) 
+
+h = 0.2 
+x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1 
+y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1 
+xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h)) 
+Z = knn.predict(np.c_[xx.ravel(), yy.ravel()]).reshape(xx.shape) 
+
+plt.contourf(xx, yy, Z, alpha=0.3, cmap='coolwarm') 
+plt.scatter(X[:, 0], X[:, 1], c=y, edgecolor='k', cmap='coolwarm') 
+plt.title('KNN Decision Boundary') 
+plt.xlabel('Feature 1') 
+plt.ylabel('Feature 2') 
+plt.show()
+
+******9.implement Depth Limited Search Algorithm.******
+
+def get_neighbors(city):
+    graph = {
+        'Arad': dict(Zerind=75, Timisora=118, Sibiu=140),
+        'Bucharest': dict(Urziceni=85, Giurgiu=90, Pitesti=101, Fagaras=211),
+        'Craiova': dict(Dobreta=120, Riminca_Vilcea=146, Pitesti=138),
+        'Dobreta': dict(Craiova=120, Mehadia=75),
+        'Eforie': dict(Hirsova=86),
+        'Fagaras': dict(Sibiu=99, Bucharest=211),
+        'Giurgiu': dict(Bucharest=90),
+        'Hirsova': dict(Eforie=86, Urziceni=98),
+        'Iasi': dict(Neamt=87, Vaslui=92),
+        'Lugoj': dict(Mehadia=70, Timisora=111),
+        'Mehadia': dict(Dobreta=75, Lugoj=70),
+        'Neamt': dict(Iasi=87),
+        'Oradea': dict(Zerind=71, Sibiu=151),
+        'Pitesti': dict(Riminca_Vilcea=97, Bucharest=101, Craiova=138),
+        'Riminca_Vilcea': dict(Pitesti=97, Craiova=146, Sibiu=80),
+        'Sibiu': dict(Oradea=151, Fagaras=99, Riminca_Vilcea=80),
+        'Timisora': dict(Arad=118, Lugoj=111),
+        'Urziceni': dict(Bucharest=85, Vaslui=142, Hirsova=98),
+        'Vaslui': dict(Iasi=92, Urziceni=142),
+        'Zerind': dict(Arad=75, Oradea=71)
+    }
+    return graph.get(city, [])
+
+def dls(start, goal, depth):
+    if start == goal:
+        return True
+    if depth <= 0:
+        return False
+
+    for neighbor in get_neighbors(start):
+        if dls(neighbor, goal, depth - 1):
+            return True
+    return False
+
+def depth_limited_search(start, goal, max_depth):
+    return dls(start, goal, max_depth)
+
+start_city = 'Arad'
+goal_city = 'Bucharest'
+max_depth = 5
+
+if depth_limited_search(start_city, goal_city, max_depth):
+    print(f"Path exists from {start_city} to {goal_city} within depth {max_depth}.")
+else:
+    print(f"No path exists from {start_city} to {goal_city} within depth {max_depth}.")
+
+******10.Implementing SWI-Prolog (Software)******
+save this in notepad as prac.pl and save as all files
+
+rectangle_area(Width, Height,Area) :-
+    Area is Width * Height.
+̥̥̥
+open prolog type consult('path of pl file').
+
+likes(mary,wine).
+likes(bob,beer).
+likes(vini,apple).
+likes(charlie,wine).
+likes(john,X) :- likes(X,wine).
+female(pammi).
+female(lizza).
+female(patty).
+female(anny).
+female(jimmy).
+male(bobby).
+male(tomy).
+male(pitter).
+parent(pammi,bobby).
+parent(tomi,lizza).
+parent(bobby,anny).
+parent(bobby,patty).
+parent(patty,jimmy).
+parent(bobby,pitter).
+parent(pitter.jimmy).
+mother(X,Y):-parent(X,Y),female(X).
+father(X,Y):-parent(X,Y),male(X).
+haschild(X):-parent(X,_).
+sister(X,Y):-parent(Z,X),parent(Z,Y),female(X),X\==Y.
+brother(X,Y):-parent(Z,X),parent(Z,Y),male(X),X\==Y.
+
+
+
+######################################################################################################################################################
+Install the Selenium server (Selenium RC) and 
+demonstrate it using a script in Java/PHP.
+
+package stqaprac3; import 
+java.util.List; import 
+org.openqa.selenium.By; import 
+org.openqa.selenium.WebDriver; import 
+org.openqa.selenium.chrome.ChromeDriver; 
+ 
+public class STQAPrac3 { 
+ 
+ public static void main(String[] args) { 
+ 
+System.setProperty("webdriver.chrome.driver","C:\\Users\\GR0012 
+AU\\Documents\\Practical 
+Downloads\\chromedriverwin32\\chromedriver.exe"); 
+WebDriver driver = new ChromeDriver(); 
+driver.get("http://www.google.com"); 
+driver.manage().window().maximize(); 
+ List lists = driver.findElements(By.xpath("//select/option")); 
+ System.out.println("Total no. of lists: " + lists.size()); 
+ } 
+}
+
+
+Write and test a program to login a specific web page
+
+package stqaprac4; import org.openqa.selenium.By; import 
+org.openqa.selenium.WebDriver; import 
+org.openqa.selenium.chrome.ChromeDriver; 
+ 
+public class STQAPrac4 { 
+ 
+ public static void main(String[] args) { 
+ 
+System.setProperty("webdriver.chrome.driver","C:\\Users\\GR0012 
+AU\\Documents\\Practical 
+Downloads\\chromedriverwin32\\chromedriver.exe"); 
+WebDriver driver = new ChromeDriver(); 
+driver.get("http://localhost/STQA/prac4.php"); 
+driver.manage().window().maximize(); 
+driver.findElement(By.id("user")).sendKeys("sies"); 
+driver.findElement(By.id("pass")).sendKeys("1234"); 
+ driver.findElement(By.id("login")).click(); 
+if(driver.getTitle().contains("welcome")) 
+ { 
+ System.out.print("Login Successful!"); 
+ } else 
+ { 
+ System.out.print("Login Failed!"); 
+ } 
+ } 
+}
+
+
+Write and test a program to login a specific web page.
+package stqaprac5; import 
+java.io.FileInputStream; import 
+java.io.FileOutputStream; import 
+jxl.Sheet; import jxl.Workbook; 
+import jxl.write.Label; import 
+jxl.write.WritableSheet; 
+import jxl.write.WritableWorkbook; 
+ 
+public class STQAPrac5 { private static Object 
+WorkBook; public static void main(String[] args) 
+throws Exception{ 
+ FileInputStream fi = new 
+FileInputStream("C:\\Users\\GR0012AU\\Documents\\Practical 
+Downloads\\Book1.xls"); 
+ Workbook w=Workbook.getWorkbook(fi); 
+ Sheet s=w.getSheet(0); 
+ String a[][]=new String[s.getRows()][s.getColumns()]; 
+ FileOutputStream to=new 
+FileOutputStream("C:\\Users\\GR0012AU\\Documents\\Practical 
+Downloads\\Book2.xls"); 
+ WritableWorkbook wwb=Workbook.createWorkbook(to); 
+WritableSheet ws=wwb.createSheet("result1", 0); for(int 
+i=0; i<s.getRows();i++) 
+ { 
+ for(int j=0;j<s.getColumns();j++) 
+ { 
+a[i][j]=s.getCell(j,i).getContents(); 
+Label l=new Label(j, i, a[i][j]); 
+ws.addCell(l); 
+ } 
+ } 
+ Label l=new Label(6,0,"Result"); 
+ws.addCell(l); for(int 
+i=1;i<s.getRows();i++) 
+ { 
+ for(int j=5;j<s.getColumns();j++) 
+ { 
+ a[i][j]=s.getCell(j,i).getContents(); 
+int x=Integer.parseInt(a[i][j]); 
+if(x/3>=35) 
+ { 
+ Label l1=new Label(6,i,"pass"); 
+ws.addCell(l1); 
+ } else 
+ { 
+ Label l1=new Label(6,i,"fail"); 
+ ws.addCell(l1); break; 
+ } 
+ } 
+ } 
+ wwb.write(); 
+wwb.close(); 
+ } 
+}
+
+
+Write and test a program to select the no. of 
+students who have scored more than 60 in anyone subject. 
+package stqaprac6; 
+ 
+import java.io.FileInputStream; import 
+java.io.FileNotFoundException; import 
+java.io.FileOutputStream; import 
+java.io.IOException; import jxl.Sheet; 
+import jxl.Workbook; import 
+jxl.read.biff.BiffException; import 
+jxl.write.Label; import 
+jxl.write.WritableSheet; import 
+jxl.write.WritableWorkbook; 
+import jxl.write.WriteException; 
+ 
+public class STQAPrac6 { 
+ 
+ public static void main(String[] args) throws Exception{ 
+ FileInputStream fi = new 
+FileInputStream("C:\\Users\\GR0012AU\\Documents\\Practical 
+Downloads\\Book1.xls"); 
+ Workbook w = Workbook.getWorkbook(fi); 
+ Sheet s = w.getSheet(0); 
+ String a[][]= new String[s.getRows()][s.getColumns()]; 
+ FileOutputStream fo = new 
+FileOutputStream("C:\\Users\\GR0012AU\\Documents\\Practical 
+Downloads\\Book3(pract6).xls"); 
+ WritableWorkbook wwb = Workbook.createWorkbook(fo); 
+WritableSheet ws = wwb.createSheet("result1", 0); 
+System.out.println(); for (int i=0; i<s.getRows(); i++) 
+ { 
+ String temp[] = new String[s.getColumns()]; 
+boolean flag = false; 
+ for(int j=0; j<s.getColumns(); j++) 
+ { 
+ temp[j] = s.getCell(j,i).getContents(); if(i 
+>= 1 && j>=2 && j<=4) 
+ { 
+ if(Integer.parseInt(temp[j]) >= 60) 
+ { 
+ flag = true; 
+ } 
+ } 
+} if(flag) 
+ { 
+ for(int k=0; k<temp.length;k++) 
+ { 
+ Label l2 = new Label(k,i,temp[k]); 
+ws.addCell(l2); 
+ } 
+ } 
+ } 
+ wwb.write(); 
+wwb.close(); 
+ } 
+} 
+
+
+Write and test a program to provide the total number 
+of objects present/available on the page. 
+
+package stqaprac7; 
+ 
+import java.util.List; import org.openqa.selenium.By; 
+import org.openqa.selenium.WebDriver; import 
+org.openqa.selenium.WebElement; 
+import org.openqa.selenium.chrome.ChromeDriver; 
+ 
+public class STQAPrac7 { public 
+static void main(String[] args) { 
+ 
+System.setProperty("webdriver.chrome.driver","C:\\Users\\GR0012 
+AU\\Documents\\Practical 
+Downloads\\chromedriverwin32\\chromedriver.exe"); 
+WebDriver driver = new ChromeDriver(); 
+driver.get("http://www.google.com"); 
+driver.manage().window().maximize(); 
+List<WebElement> links = 
+driver.findElements(By.tagName("a")); 
+List<WebElement> buttons = 
+driver.findElements(By.tagName("button")); 
+List<WebElement> fields = 
+driver.findElements(By.tagName("input")); 
+ System.out.println("Total No. of links = " +links.size()); 
+ System.out.println("Total No. of buttons = " +buttons.size()); 
+ System.out.println("Total No. of fields = " +fields.size()); 
+ } 
+}
+
+
+Write and test a program to get the number of items in 
+a list/combo box.
+Code: HTML 
+Code: 
+<html> 
+<body> 
+<h1>Computer Science</h1> 
+<ul> 
+ <li>Web Programming</li> 
+ <li>Python</li> 
+ <li>Java</li> 
+ <li>C Programming</li> 
+ <li>.NET</li> 
+</ul> 
+Choose a Character : 
+<select> 
+<option>Tarzan </option> 
+<option>Doraemon</option> <option>Shinchan</option> 
+<option>Pokaemon</option> 
+</select> 
+<body> 
+</html> 
+ 
+Java Code: 
+package stqaprac8; 
+ 
+import java.util.List; import org.openqa.selenium.By; 
+import org.openqa.selenium.WebDriver; import 
+org.openqa.selenium.chrome.ChromeDriver; 
+ 
+public class STQAPrac8 { 
+ 
+ 
+ public static void main(String[] args) { 
+ 
+System.setProperty("webdriver.chrome.driver","C:\\Users\\GR0012 
+AU\\Documents\\Practical 
+Downloads\\chromedriverwin32\\chromedriver.exe"); 
+WebDriver driver = new ChromeDriver(); 
+ driver.get("C:\\Users\\GR0012AU\\Documents\\Practical 
+Downloads\\pract8.html"); 
+ driver.manage().window().maximize(); 
+ List list2 = driver.findElements(By.xpath("//select/option")); 
+ List list1 = driver.findElements(By.xpath("//ul/li")); 
+ System.out.println("Total no. of List: " +list1.size()); 
+ System.out.println("Total no. of Character: " + list2.size()); 
+ 
+ } 
+ 
+}
+
+
+ Write and test a program to count the number of 
+checkboxes on the page checked and unchecked count.
+Code: HTML 
+Code: 
+<html> 
+<body> 
+<input type="checkbox" checked>CS 
+<br> 
+<input type="checkbox">IT 
+<br> 
+<input type="checkbox">MBA 
+<br> 
+<input type="checkbox">EVS 
+<br> 
+<input type="checkbox">BMS 
+<br> 
+<input type="checkbox" checked>DS 
+</body> 
+</html> 
+ 
+Java Code: 
+ 
+package stqaprac9; 
+ 
+import java.util.List; import org.openqa.selenium.By; 
+import org.openqa.selenium.WebDriver; 
+import org.openqa.selenium.WebElement; 
+
+ 
+public class STQAPrac9 { 
+ 
+ public static void main(String[] args) { 
+System.setProperty("webdriver.chrome.driver","C:\\Users\\GR0012 
+AU\\Documents\\Practical Downloads\\chromedriverwin32\\chromedriver.exe"); WebDriver driver = new 
+org.openqa.selenium.chrome.ChromeDriver(); 
+ driver.get("C:\\Users\\GR0012AU\\Documents\\Practical 
+Downloads\\pract9.html"); 
+ driver.manage().window().maximize(); 
+ List<WebElement> check 
+=driver.findElements(By.xpath("//input[@type='checkbox']")); 
+System.out.println("Total no of checkboxes : " + check.size()); 
+int checked_Count=0,unchecked_Count=0; 
+for(int i=0;i<check.size();i++) 
+ { 
+if(check.get(i).isSelected()) 
+ { 
+ checked_Count++; 
+ } else 
+ { 
+ unchecked_Count++; 
+ } 
+ } 
+ System.out.println("Number of selected checkboxes are : " 
++checked_Count); 
+ System.out.println("Number of unselected checkboxes are : " 
++unchecked_Count); 
+ 
+ } 
+ 
+}
+
